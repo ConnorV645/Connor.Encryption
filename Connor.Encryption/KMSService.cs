@@ -17,31 +17,31 @@ namespace Connor.Encryption
             this.logger = logger;
             try
             {
-                var sesAccess = Environment.GetEnvironmentVariable("KMSAccess");
-                var sesSecret = Environment.GetEnvironmentVariable("KMSSecret");
-                var sesRegion = Environment.GetEnvironmentVariable("KMSRegion");
+                var kmsAccess = Environment.GetEnvironmentVariable("KMSAccess");
+                var kmsSecret = Environment.GetEnvironmentVariable("KMSSecret");
+                var kmsRegion = Environment.GetEnvironmentVariable("KMSRegion");
                 defaultKeyId = Environment.GetEnvironmentVariable("KMSDefaultKey");
 
-                if (string.IsNullOrEmpty(sesAccess))
+                if (string.IsNullOrEmpty(kmsAccess))
                 {
                     throw new Exception("KMSAccess Environment Variable is not set");
                 }
-                if (string.IsNullOrEmpty(sesSecret))
+                if (string.IsNullOrEmpty(kmsSecret))
                 {
                     throw new Exception("KMSSecret Environment Variable is not set");
                 }
-                if (string.IsNullOrEmpty(sesRegion))
+                if (string.IsNullOrEmpty(kmsRegion))
                 {
                     throw new Exception("KMSRegion Environment Variable is not set");
                 }
 
-                var region = RegionEndpoint.GetBySystemName(sesRegion);
+                var region = RegionEndpoint.GetBySystemName(kmsRegion);
                 if (region == null)
                 {
                     throw new Exception("Invalid AWS Region");
                 }
 
-                awsClient = new AmazonKeyManagementServiceClient(sesAccess, sesSecret, region);
+                awsClient = new AmazonKeyManagementServiceClient(kmsAccess, kmsSecret, region);
             }
             catch (Exception ex)
             {
@@ -64,7 +64,7 @@ namespace Connor.Encryption
             }
             catch (Exception ex)
             {
-                logger?.LogError(ex, "Error Decrypting String");
+                logger?.LogError(ex, "Error KMS Decrypting String");
                 throw;
             }
         }
@@ -99,7 +99,7 @@ namespace Connor.Encryption
             }
             catch (Exception ex)
             {
-                logger?.LogError(ex, "Error Encrypting String");
+                logger?.LogError(ex, "Error KMS Encrypting String");
                 throw;
             }
         }
