@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <!-- For NuGet -->
+    <PackageId>Connor.Encryption</PackageId>
+    <Version>5.0.0</Version>
+    <Authors>Connor Vargas</Authors>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/ConnorV645/Connor.SES</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/ConnorV645/Connor.SES</PackageProjectUrl>
+    <PackageIcon>icon1.png</PackageIcon>
+    <Description>Provide AES and AWS KMS Encryption Capabilities Through a Single Interface</Description>
+    <AssemblyVersion>5.0.0.0</AssemblyVersion>
+    <FileVersion>5.0.0.0</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.KeyManagementService" Version="3.7.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+    <None Include="icon1.png" Pack="true" PackagePath=""/>
+  </ItemGroup>
+
+</Project>
