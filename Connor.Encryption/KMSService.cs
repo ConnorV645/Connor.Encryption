@@ -1,9 +1,10 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using Amazon;
+﻿using Amazon;
+using Amazon.Extensions.NETCore.Setup;
 using Amazon.KeyManagementService;
 using Microsoft.Extensions.Logging;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Connor.Encryption
 {
@@ -12,7 +13,7 @@ namespace Connor.Encryption
         private readonly ILogger<KMSService> logger;
         private readonly AmazonKeyManagementServiceClient awsClient;
         private readonly string defaultKeyId;
-        public KMSService(ILogger<KMSService> logger)
+        public KMSService(ILogger<KMSService> logger, AWSOptions options = null)
         {
             this.logger = logger;
             try
@@ -22,26 +23,25 @@ namespace Connor.Encryption
                 var kmsRegion = Environment.GetEnvironmentVariable("KMSRegion");
                 defaultKeyId = Environment.GetEnvironmentVariable("KMSDefaultKey");
 
-                if (string.IsNullOrEmpty(kmsAccess))
+                if (options != null && options.Credentials != null)
                 {
-                    throw new Exception("KMSAccess Environment Variable is not set");
+                    awsClient = new(options.Credentials, options.Region);
                 }
-                if (string.IsNullOrEmpty(kmsSecret))
+                else if (!string.IsNullOrEmpty(kmsAccess) && !string.IsNullOrEmpty(kmsSecret) && !string.IsNullOrEmpty(kmsRegion))
                 {
-                    throw new Exception("KMSSecret Environment Variable is not set");
-                }
-                if (string.IsNullOrEmpty(kmsRegion))
-                {
-                    throw new Exception("KMSRegion Environment Variable is not set");
-                }
+                    var region = RegionEndpoint.GetBySystemName(kmsRegion);
+                    if (region == null)
+                    {
+                        throw new Exception("Invalid AWS Region");
+                    }
 
-                var region = RegionEndpoint.GetBySystemName(kmsRegion);
-                if (region == null)
-                {
-                    throw new Exception("Invalid AWS Region");
+                    awsClient = new(kmsAccess, kmsSecret, region);
                 }
-
-                awsClient = new AmazonKeyManagementServiceClient(kmsAccess, kmsSecret, region);
+                else
+                {
+                    var creds = Amazon.Runtime.FallbackCredentialsFactory.GetCredentials();
+                    awsClient = new(creds);
+                }
             }
             catch (Exception ex)
             {
